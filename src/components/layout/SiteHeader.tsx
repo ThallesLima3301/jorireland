@@ -60,69 +60,77 @@ export function SiteHeader() {
   const solid = scrolled || openMenu !== null || mobileOpen;
 
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500",
-        solid ? "bg-cream-50/95 shadow-[0_1px_0_rgba(15,42,33,0.08)] backdrop-blur-md" : "bg-linear-to-b from-forest-950/60 to-transparent",
-      )}
-    >
-      <div className="container-page flex h-20 items-center justify-between gap-6">
-        <Link href="/" className="relative z-10 shrink-0" aria-label={`${site.name}, home`}>
-          <Image
-            src={solid ? "/brand/logo-dark.svg" : "/brand/logo-light.svg"}
-            alt=""
-            width={171}
-            height={50}
-            unoptimized
-            preload
-            className="h-11 w-auto md:h-12"
-          />
-        </Link>
-
-        <nav ref={navRef} aria-label="Main" className="hidden lg:block">
-          <ul className="flex items-center gap-1">
-            {mainNav.map((item) => (
-              <DesktopItem
-                key={item.label}
-                item={item}
-                solid={solid}
-                open={openMenu === item.label}
-                active={pathname === item.href || pathname.startsWith(`${item.href}/`)}
-                onOpen={() => setOpenMenu(item.label)}
-                onClose={() => setOpenMenu((cur) => (cur === item.label ? null : cur))}
-                onToggle={() => setOpenMenu((cur) => (cur === item.label ? null : item.label))}
-              />
-            ))}
-          </ul>
-        </nav>
-
-        <div className="hidden items-center gap-5 lg:flex">
-          <a
-            href={site.primaryPhoneHref}
-            className={cn("flex items-center gap-2 text-sm font-semibold transition-colors", solid ? "text-forest-900 hover:text-emerald-700" : "text-white/90 hover:text-white")}
-          >
-            <Phone aria-hidden className="size-4" />
-            {site.primaryPhone}
-          </a>
-          <Link href="/contact" className={buttonClasses({ variant: "primary" })}>
-            Plan Your Experience
+    <>
+      <header
+        className={cn(
+          "fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500",
+          solid ? "bg-cream-50/95 shadow-[0_1px_0_rgba(15,42,33,0.08)] backdrop-blur-md" : "bg-linear-to-b from-forest-950/60 to-transparent",
+        )}
+      >
+        <div className="container-page flex h-20 items-center justify-between gap-6">
+          <Link href="/" className="relative z-10 shrink-0" aria-label={`${site.name}, home`}>
+            <Image
+              src={solid ? "/brand/logo-dark.svg" : "/brand/logo-light.svg"}
+              alt=""
+              width={171}
+              height={50}
+              unoptimized
+              preload
+              className="h-11 w-auto md:h-12"
+            />
           </Link>
+
+          <nav ref={navRef} aria-label="Main" className="hidden lg:block">
+            <ul className="flex items-center gap-1">
+              {mainNav.map((item) => (
+                <DesktopItem
+                  key={item.label}
+                  item={item}
+                  solid={solid}
+                  open={openMenu === item.label}
+                  active={pathname === item.href || pathname.startsWith(`${item.href}/`)}
+                  onOpen={() => setOpenMenu(item.label)}
+                  onClose={() => setOpenMenu((cur) => (cur === item.label ? null : cur))}
+                  onToggle={(fromPointer) =>
+                    // A mouse click follows a hover that already opened the panel, so it only opens;
+                    // keyboard activation (Enter/Space) toggles.
+                    setOpenMenu((cur) => (fromPointer ? item.label : cur === item.label ? null : item.label))
+                  }
+                />
+              ))}
+            </ul>
+          </nav>
+
+          <div className="hidden items-center gap-5 lg:flex">
+            <a
+              href={site.primaryPhoneHref}
+              className={cn("flex items-center gap-2 text-sm font-semibold transition-colors", solid ? "text-forest-900 hover:text-emerald-700" : "text-white/90 hover:text-white")}
+            >
+              <Phone aria-hidden className="size-4" />
+              {site.primaryPhone}
+            </a>
+            <Link href="/contact" className={buttonClasses({ variant: "primary" })}>
+              Plan Your Experience
+            </Link>
+          </div>
+
+          <button
+            type="button"
+            className={cn("relative z-10 -mr-2 rounded-full p-2 lg:hidden", solid || mobileOpen ? "text-forest-950" : "text-white")}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? <X className="size-7" aria-hidden /> : <Menu className="size-7" aria-hidden />}
+          </button>
         </div>
+      </header>
 
-        <button
-          type="button"
-          className={cn("relative z-10 -mr-2 rounded-full p-2 lg:hidden", solid || mobileOpen ? "text-forest-950" : "text-white")}
-          aria-expanded={mobileOpen}
-          aria-controls="mobile-menu"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          onClick={() => setMobileOpen((v) => !v)}
-        >
-          {mobileOpen ? <X className="size-7" aria-hidden /> : <Menu className="size-7" aria-hidden />}
-        </button>
-      </div>
-
+      {/* Rendered outside <header>: the header's backdrop-filter would otherwise make it the
+          containing block for this fixed overlay and clip it to the header's height. */}
       <MobileMenu open={mobileOpen} onNavigate={() => setMobileOpen(false)} />
-    </header>
+    </>
   );
 }
 
@@ -141,7 +149,7 @@ function DesktopItem({
   active: boolean;
   onOpen: () => void;
   onClose: () => void;
-  onToggle: () => void;
+  onToggle: (fromPointer: boolean) => void;
 }) {
   const panelId = useId();
   const linkClass = cn(
@@ -162,7 +170,7 @@ function DesktopItem({
 
   return (
     <li className="relative" onMouseEnter={onOpen} onMouseLeave={onClose}>
-      <button type="button" className={linkClass} aria-expanded={open} aria-controls={panelId} onClick={onToggle}>
+      <button type="button" className={linkClass} aria-expanded={open} aria-controls={panelId} onClick={(e) => onToggle(e.detail > 0)}>
         {item.label}
         <ChevronDown aria-hidden className={cn("size-4 transition-transform duration-300", open && "rotate-180")} />
       </button>
@@ -192,7 +200,7 @@ function MobileMenu({ open, onNavigate }: { open: boolean; onNavigate: () => voi
     <div
       id="mobile-menu"
       hidden={!open}
-      className="fixed inset-0 top-0 z-0 overflow-y-auto bg-cream-50 px-5 pt-24 pb-10 lg:hidden"
+      className="fixed inset-0 z-40 overflow-y-auto bg-cream-50 px-5 pt-24 pb-10 lg:hidden"
     >
       <nav aria-label="Mobile">
         <ul className="divide-y divide-forest-900/10 border-y border-forest-900/10">
