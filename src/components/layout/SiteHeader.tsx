@@ -50,12 +50,30 @@ export function SiteHeader() {
     };
   }, []);
 
+  // While the mobile menu is open: lock page scroll, make the page behind it inert so keyboard
+  // focus stays in the header + menu, and move focus into the menu. On close, focus returns to the toggle.
+  const toggleRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    document.documentElement.style.overflow = mobileOpen ? "hidden" : "";
+    if (!mobileOpen) return;
+    const background = document.querySelectorAll<HTMLElement>("main, footer, [data-mobile-cta]");
+    document.documentElement.style.overflow = "hidden";
+    background.forEach((el) => (el.inert = true));
+    document.querySelector<HTMLElement>("#mobile-menu button, #mobile-menu a")?.focus();
+    const toggle = toggleRef.current;
     return () => {
       document.documentElement.style.overflow = "";
+      background.forEach((el) => (el.inert = false));
+      if (toggle && getComputedStyle(toggle).display !== "none") toggle.focus();
     };
   }, [mobileOpen]);
+
+  // The mobile menu doesn't exist at desktop widths; close it if the window grows past the breakpoint.
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => desktop.matches && setMobileOpen(false);
+    desktop.addEventListener("change", onChange);
+    return () => desktop.removeEventListener("change", onChange);
+  }, []);
 
   const solid = scrolled || openMenu !== null || mobileOpen;
 
@@ -115,6 +133,7 @@ export function SiteHeader() {
           </div>
 
           <button
+            ref={toggleRef}
             type="button"
             className={cn("relative z-10 -mr-2 rounded-full p-2 lg:hidden", solid || mobileOpen ? "text-forest-950" : "text-white")}
             aria-expanded={mobileOpen}
@@ -169,7 +188,15 @@ function DesktopItem({
   }
 
   return (
-    <li className="relative" onMouseEnter={onOpen} onMouseLeave={onClose}>
+    <li
+      className="relative"
+      onMouseEnter={onOpen}
+      onMouseLeave={onClose}
+      onBlur={(e) => {
+        // Close when keyboard focus moves outside this item and its panel.
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) onClose();
+      }}
+    >
       <button type="button" className={linkClass} aria-expanded={open} aria-controls={panelId} onClick={(e) => onToggle(e.detail > 0)}>
         {item.label}
         <ChevronDown aria-hidden className={cn("size-4 transition-transform duration-300", open && "rotate-180")} />

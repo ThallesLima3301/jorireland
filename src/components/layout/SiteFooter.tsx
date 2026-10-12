@@ -91,7 +91,8 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-white/10">
-        <div className="container-page flex flex-col gap-3 py-6 text-sm text-cream-100/60 sm:flex-row sm:items-center sm:justify-between">
+        {/* Extra bottom padding below lg keeps this row clear of the fixed mobile CTA bar. */}
+        <div className="container-page flex flex-col gap-3 pt-6 pb-28 text-sm lg:pb-6 text-cream-100/60 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {process.env.BUILD_YEAR} {site.name}. All rights reserved.
           </p>

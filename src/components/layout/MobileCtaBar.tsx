@@ -23,9 +23,11 @@ export function MobileCtaBar() {
 
   return (
     <div
+      data-mobile-cta
       aria-hidden={!visible}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-40 border-t border-forest-900/10 bg-cream-50/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md transition-transform duration-500 lg:hidden",
+        // z-30: below the header (z-50) and the open mobile menu (z-40).
+        "fixed inset-x-0 bottom-0 z-30 border-t border-forest-900/10 bg-cream-50/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md transition-transform duration-500 lg:hidden",
         visible ? "translate-y-0" : "pointer-events-none translate-y-full",
       )}
     >
