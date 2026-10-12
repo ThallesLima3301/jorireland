@@ -44,3 +44,6 @@ next-env.d.ts
 # local tooling (Salesforce CLI metadata, Claude Code settings)
 .sf/
 .claude/
+
+.vercel
+.env*
