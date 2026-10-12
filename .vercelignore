@@ -1,0 +1,15 @@
+# Local tooling and files that are not part of the website deployment.
+.claude/
+.codex/
+.agents/
+.sf/
+.git/
+.next/
+node_modules/
+coverage/
+*.tsbuildinfo
+*.log
+.env*
+AGENTS.md
+CLAUDE.md
+docs/

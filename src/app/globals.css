@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------
+   Design tokens
+   Greens are taken from the existing brand (#008754, #00C16E);
+   gold comes from the crown in the JOR logo (#C4A006).
+---------------------------------------------------------------- */
+@theme {
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+
+  --color-forest-950: #0a1c16;
+  --color-forest-900: #0f2a21;
+  --color-forest-800: #15382c;
+  --color-forest-700: #1e4a3a;
+  --color-forest-600: #2c5f4b;
+
+  --color-emerald-700: #006b43;
+  --color-emerald-600: #008754;
+  --color-emerald-500: #00a366;
+  --color-emerald-400: #00c16e;
+  --color-emerald-100: #dcefe5;
+
+  --color-gold-600: #a88a05;
+  --color-gold-500: #c4a006;
+  --color-gold-400: #d9bc3f;
+  --color-gold-200: #f0e3b0;
+
+  --color-cream-50: #fbf9f4;
+  --color-cream-100: #f5f1e8;
+  --color-cream-200: #ece5d6;
+  --color-cream-300: #ddd3bf;
+
+  --color-ink: #17201c;
+  --color-ink-muted: #55625b;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-hero-zoom: hero-zoom 24s var(--ease-out-soft) both;
+
+  @keyframes hero-zoom {
+    from {
+      transform: scale(1.12);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-cream-50);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Keep anchored sections clear of the fixed header. */
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    text-wrap: balance;
+    font-optical-sizing: auto;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-gold-200);
+    color: var(--color-forest-950);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold-500);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+
+  @media (min-width: 768px) {
+    .container-page {
+      padding-inline: 2rem;
+    }
+  }
+
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .prose-body p + p {
+    margin-top: 1.1em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
